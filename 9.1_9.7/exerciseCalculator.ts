@@ -9,7 +9,25 @@ interface Result {
   average: number
 }
 
-const calculateExercises = (dailyExerciseHours: Array<number>, target: number): Result => {
+const parseArguments_exe = (args: Array<string>): { dailyExerciseHours: Array<number>, target: number } => {
+  if (args.length < 4) throw new Error('Not enough arguments');
+  if (args.length > 4) throw new Error('Too many arguments');
+  const target = Number(args[2]);
+  const dailyExerciseHours = args.slice(3).map(hours => Number(hours));
+  if (!isNaN(target) && dailyExerciseHours.every(hours => !isNaN(hours))) {
+    return {
+      target,
+      dailyExerciseHours
+    }
+  } else {
+    throw new Error('Provided values were not numbers!');
+  }
+}
+
+const calculateExercises = (
+  //dailyExerciseHours: Array<number>, target: number
+  ): Result => {
+  const { dailyExerciseHours, target } = parseArguments_exe(process.argv);
   const periodLength = dailyExerciseHours.length;
   const trainingDays = dailyExerciseHours.filter(hours => hours > 0).length;
   const average = dailyExerciseHours.reduce((a, b) => a + b, 0) / periodLength;
@@ -19,4 +37,4 @@ const calculateExercises = (dailyExerciseHours: Array<number>, target: number): 
   return { periodLength, trainingDays, success, rating, ratingDescription, target, average };
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2.5));
+console.log(calculateExercises());
